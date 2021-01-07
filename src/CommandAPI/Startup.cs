@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using CommandAPI.Data;
 using Npgsql;
+using AutoMapper;
+using Newtonsoft.Json.Serialization;
 
 namespace CommandAPI
 {
@@ -24,8 +30,10 @@ namespace CommandAPI
             builder.Password=Configuration["Password"];
             services.AddDbContext<CommandContext>(opt => opt.UseNpgsql
                 (builder.ConnectionString));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(s=>
+                s.SerializerSettings.ContractResolver=new CamelCasePropertyNamesContractResolver());
             //services.AddScoped<ICommandAPIRepo,MockCommandAPIRepo>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ICommandAPIRepo,SqlCommandAPIRepo>();
         }
 
